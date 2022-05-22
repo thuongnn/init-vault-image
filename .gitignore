@@ -1,0 +1,3 @@
+**/sa-token/
+**/vault-k8s-init
+!.gitignore
