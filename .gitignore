@@ -1,3 +1,4 @@
 **/sa-token/
 **/vault-k8s-init
+**/retrieve-vault-token
 !.gitignore

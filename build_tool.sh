@@ -14,14 +14,14 @@ AVAILABLE_OPTION=true
 export HTTP_PROXY=
 export HTTPS_PROXY=
 export GOARCH=amd64
-OUTPUT_BIN=vault-k8s-init
+OUTPUT_BIN=retrieve-vault-token
 
 
 case $1 in
   windows | window)
     printf "Starting build for window..."
     export GOOS=windows
-    export OUTPUT_BIN=vault-k8s-init.exe
+    export OUTPUT_BIN=retrieve-vault-token.exe
     ;;
   macos)
     printf "Starting build for macos..."

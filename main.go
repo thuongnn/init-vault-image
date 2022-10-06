@@ -43,8 +43,7 @@ func main() {
 		return
 	}
 
-	fmt.Printf("VAULT_TOKEN=%s", vaultClient.Token())
-	fmt.Println()
+	fmt.Println(vaultClient.Token())
 }
 
 func getVaultClient() (*vault.Client, error) {
