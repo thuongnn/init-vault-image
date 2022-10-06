@@ -5,23 +5,29 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	vault "github.com/hashicorp/vault/api"
-	auth "github.com/hashicorp/vault/api/auth/kubernetes"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
+
+	vault "github.com/hashicorp/vault/api"
+	auth "github.com/hashicorp/vault/api/auth/kubernetes"
 )
 
 var (
-	VaultAddr   = "https://127.0.0.1:8200"
-	VaultCAPath = "/run/secrets/kubernetes.io/serviceaccount/ca.crt"
-	SATokenPath = "/run/secrets/kubernetes.io/serviceaccount/token"
-	RoleName    = ""
+	VaultAddr       = "https://127.0.0.1:8200"
+	VaultSkipVerify = false
+	VaultCAPath     = ""
+	SATokenPath     = "/run/secrets/kubernetes.io/serviceaccount/token"
+	RoleName        = ""
 )
 
 func envConfig() {
 	if v := os.Getenv("VAULT_ADDR"); v != "" {
 		VaultAddr = v
+	}
+	if v := os.Getenv("VAULT_SKIP_VERIFY"); v != "" {
+		VaultSkipVerify, _ = strconv.ParseBool(v)
 	}
 	if v := os.Getenv("VAULT_CA_PATH"); v != "" {
 		VaultCAPath = v
@@ -55,8 +61,10 @@ func getVaultClient() (*vault.Client, error) {
 	// set Vault address
 	config.Address = VaultAddr
 
-	// if CA Cert path exists, then...
-	if FileExists(VaultCAPath) {
+	if VaultSkipVerify {
+		httpTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+		config.HttpClient = &http.Client{Transport: httpTransport}
+	} else if FileExists(VaultCAPath) {
 		caCert, err := ioutil.ReadFile(VaultCAPath)
 		if err != nil {
 			return nil, fmt.Errorf("%v", err)
